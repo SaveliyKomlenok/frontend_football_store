@@ -1,15 +1,15 @@
 import 'dart:convert';
-import 'dart:typed_data';
-import 'package:frontend_football_store/model/shoes_response.dart';
-import 'package:frontend_football_store/model/shoes_with_sizes_response.dart';
+import 'package:frontend_football_store/model/order_list_response.dart';
+import 'package:frontend_football_store/model/order_response.dart';
+import 'package:frontend_football_store/model/request/order_request.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../util/constants.dart';
 
-class ShoesService {
-  Future<Uint8List?> getShoesImage(int id) async {
-    final url = Uri.parse('$baseURL/api/v1/shoes/$id/image');
+class OrderService {
+  Future<OrderListResponse> findAllOrders() async {
+    final url = Uri.parse('$baseURL/api/v1/orders');
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('token');
@@ -23,9 +23,9 @@ class ShoesService {
       final response = await http.get(url, headers: headers);
 
       if (response.statusCode == 200) {
-        return response.bodyBytes; // Return image as Uint8List
+        return OrderListResponse.fromMap(json.decode(utf8.decode(response.bodyBytes)));
       } else {
-        throw Exception('Failed to load image: ${response.statusCode}');
+        throw Exception('Failed to load orders: ${response.statusCode}');
       }
     } catch (e) {
       print('Error occurred: $e');
@@ -33,8 +33,8 @@ class ShoesService {
     }
   }
 
-  Future<List<ShoesResponse>> getAllShoes() async {
-    final url = Uri.parse('$baseURL/api/v1/shoes');
+  Future<OrderResponse> createOrder(OrderRequest request) async {
+    final url = Uri.parse('$baseURL/api/v1/orders');
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('token');
@@ -45,14 +45,12 @@ class ShoesService {
     };
 
     try {
-      final response = await http.get(url, headers: headers);
+      final response = await http.post(url, headers: headers, body: json.encode(request.toMap()));
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonResponse = json.decode(utf8.decode(response.bodyBytes));
-        var list = jsonResponse['items'] as List<dynamic>;
-        return list.map((model) => ShoesResponse.fromMap(model)).toList();
+      if (response.statusCode == 201) {
+        return OrderResponse.fromMap(json.decode(utf8.decode(response.bodyBytes)));
       } else {
-        throw Exception('Failed to load shoes: ${response.statusCode}');
+        throw Exception('Failed to create order: ${response.statusCode}');
       }
     } catch (e) {
       print('Error occurred: $e');
@@ -60,8 +58,8 @@ class ShoesService {
     }
   }
 
-  Future<ShoesWithSizesResponse> getShoesById(int id) async {
-    final url = Uri.parse('$baseURL/api/v1/shoes/$id');
+  Future<void> deleteOrder(int id) async {
+    final url = Uri.parse('$baseURL/api/v1/orders/$id');
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('token');
@@ -72,13 +70,10 @@ class ShoesService {
     };
 
     try {
-      final response = await http.get(url, headers: headers);
+      final response = await http.delete(url, headers: headers);
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonResponse = json.decode(utf8.decode(response.bodyBytes));
-        return ShoesWithSizesResponse.fromMap(jsonResponse);
-      } else {
-        throw Exception('Failed to load shoes item: ${response.statusCode}');
+      if (response.statusCode != 200) {
+        throw Exception('Failed to delete order: ${response.statusCode}');
       }
     } catch (e) {
       print('Error occurred: $e');
