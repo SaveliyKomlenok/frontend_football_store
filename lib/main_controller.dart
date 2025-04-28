@@ -23,7 +23,7 @@ class _MainControllerState extends State<MainController> {
     const ClothesPage(),
     const ShoesPage(),
     const CartPage(),
-    const ProfilePage(),
+    const ProfilePage()
   ];
 
   void _selectPage(int index) {
