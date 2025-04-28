@@ -5,6 +5,7 @@ import 'package:frontend_football_store/pages/custom_app_bar.dart';
 import 'package:frontend_football_store/pages/main_page.dart';
 import 'package:frontend_football_store/pages/profile_page.dart';
 import 'package:frontend_football_store/pages/shoes_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 
@@ -17,7 +18,10 @@ class MainController extends StatefulWidget {
 
 class _MainControllerState extends State<MainController> {
   int _selectedPage = 0;
-
+  String? token;
+  String? role;
+  String? username;
+  late SharedPreferences prefs;
   final List<Widget> _pages = [
     const MainPage(),
     const ClothesPage(),
@@ -25,6 +29,21 @@ class _MainControllerState extends State<MainController> {
     const CartPage(),
     const ProfilePage()
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    initSharedPref();
+  }
+
+  void initSharedPref() async {
+    prefs = await SharedPreferences.getInstance();
+    setState(() {
+      token = prefs.getString('token');
+      role = prefs.getString('role');
+      username = prefs.getString('username');
+    });
+  }
 
   void _selectPage(int index) {
     setState(() {
@@ -35,7 +54,7 @@ class _MainControllerState extends State<MainController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(onMenuTap: _selectPage),
+      appBar: CustomAppBar(onMenuTap: _selectPage,token: token,),
       body: _pages[_selectedPage],
     );
   }

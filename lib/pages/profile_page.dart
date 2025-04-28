@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_football_store/main_controller.dart';
 import 'package:frontend_football_store/pages/main_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -48,7 +49,11 @@ class ProfilePage extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
+               SharedPreferences prefs = await SharedPreferences.getInstance();
+                prefs.remove('token');
+                prefs.remove('role');
+                prefs.remove('username');
                 // Логика выхода из профиля
                Navigator.pushReplacement(
                       context,
