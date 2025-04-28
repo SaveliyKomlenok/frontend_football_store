@@ -9,6 +9,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  carousel_slider: ^4.2.1
+  flutter_svg: ^1.1.6 
+
 
 dev_dependencies:
   flutter_test:
@@ -17,3 +20,6 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+   - lib/images/football-shoe-svgrepo-com.svg
+   - lib/images/soccer-player-striped-t-shirt-svgrepo-com.svg
