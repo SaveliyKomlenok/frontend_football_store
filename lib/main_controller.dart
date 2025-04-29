@@ -33,7 +33,7 @@ class _MainControllerState extends State<MainController> {
       const MainPage(),
       ClothesPage(onMenuTap: _selectPage),
       ShoesPage(onMenuTap: _selectPage),
-      const CartPage(),
+      CartPage(),
       const ProfilePage(),
       const ClothingInfoPage(),
       const ShoesInfoPage()

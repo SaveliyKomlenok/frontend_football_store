@@ -4,7 +4,7 @@ import 'package:frontend_football_store/model/cart_shoes_response.dart';
 class CartResponse {
   final List<CartClothingResponse> cartClothingList;
   final List<CartShoesResponse> cartShoesList;
-  final double totalPrice; // Используем double для цены
+  double totalPrice; // Используем double для цены
 
   CartResponse({
     required this.cartClothingList,

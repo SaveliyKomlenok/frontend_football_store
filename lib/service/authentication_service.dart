@@ -63,10 +63,13 @@ class AuthenticationService {
         prefs.setString('token', myToken);
         prefs.setString('role', jsonResponse['role']);
         prefs.setString('username', jsonResponse['username']);
+        
         Navigator.pushReplacement(
           context,
            MaterialPageRoute(builder: (c) => const MainController()),
         );
+        //Navigator.of(context).pop();
+         
       } else {
         // Обработка ошибок
         ScaffoldMessenger.of(context).showSnackBar(
