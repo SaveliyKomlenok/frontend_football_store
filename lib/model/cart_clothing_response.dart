@@ -2,7 +2,7 @@ import 'package:frontend_football_store/model/clothing_warehouse_response.dart';
 
 class CartClothingResponse {
   final int id;
-  final int amount;
+  int amount;
   final ClothingWarehouseResponse clothing;
 
   CartClothingResponse({

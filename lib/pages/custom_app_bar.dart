@@ -25,6 +25,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      automaticallyImplyLeading: false,
       elevation: 0,
       backgroundColor: const Color.fromARGB(255, 0, 140, 255),
       foregroundColor: Colors.black,
@@ -171,7 +172,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                         password: passwordController.text,
                       );
                       AuthenticationService.authenticate(request, context);
-                      Navigator.of(context).pop();
+                     
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -331,7 +332,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                         password: passwordController.text,
                       );
                       AuthenticationService().register(request, context);
-                      Navigator.of(context).pop();
+                      
                     }
                   },
                   style: ElevatedButton.styleFrom(
