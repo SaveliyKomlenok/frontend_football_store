@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_football_store/cards/cloth_card.dart';
+
 class ClothesPage extends StatelessWidget {
-  const ClothesPage({super.key});
+  final Function(int) onMenuTap;
+
+  const ClothesPage({super.key, required this.onMenuTap});
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +28,7 @@ class ClothesPage extends StatelessWidget {
             title: 'Товар ${index + 1}',
             price: 5000 + index * 300,
             imageUrl: 'https://via.placeholder.com/300x400',
+            onPressed: () => onMenuTap(5), // Navigate to ClothingInfoPage
           );
         },
       ),

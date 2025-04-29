@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_football_store/cards/cloth_card.dart';
+import 'package:frontend_football_store/cards/shoe_card.dart';
+
 class ShoesPage extends StatelessWidget {
-  const ShoesPage({super.key});
+  final Function(int) onMenuTap; // Add this line
+
+  const ShoesPage({super.key, required this.onMenuTap}); // Modify constructor
 
   @override
   Widget build(BuildContext context) {
@@ -21,10 +24,11 @@ class ShoesPage extends StatelessWidget {
           childAspectRatio: 0.75,
         ),
         itemBuilder: (context, index) {
-          return ClothCard(
+          return ShoeCard(
             title: 'Товар ${index + 1}',
             price: 5000 + index * 300,
             imageUrl: 'https://via.placeholder.com/300x400',
+            onPressed: () => onMenuTap(6), // Navigate to ShoeInfoPage
           );
         },
       ),

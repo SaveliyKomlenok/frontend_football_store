@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_football_store/main_controller.dart';
-import 'package:frontend_football_store/pages/main_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatelessWidget {
