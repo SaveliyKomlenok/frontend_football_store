@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:frontend_football_store/model/clothing_response.dart';
 import 'package:frontend_football_store/model/clothing_with_sizes_response.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -33,7 +32,7 @@ class ClothingService {
     }
   }
 
-  Future<List<ClothingResponse>> getAllClothingItems() async {
+  Future<List<ClothingWithSizesResponse>> getAllClothingItems() async {
     final url = Uri.parse('$baseURL/api/v1/clothing');
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -50,7 +49,7 @@ class ClothingService {
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = json.decode(utf8.decode(response.bodyBytes));
         var list = jsonResponse['items'] as List<dynamic>;
-        return list.map((model) => ClothingResponse.fromMap(model)).toList();
+        return list.map((model) => ClothingWithSizesResponse.fromMap(model)).toList();
       } else {
         throw Exception('Failed to load clothing items: ${response.statusCode}');
       }

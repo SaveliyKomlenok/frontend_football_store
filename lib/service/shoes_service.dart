@@ -33,7 +33,7 @@ class ShoesService {
     }
   }
 
-  Future<List<ShoesResponse>> getAllShoes() async {
+  Future<List<ShoesWithSizesResponse>> getAllShoes() async {
     final url = Uri.parse('$baseURL/api/v1/shoes');
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -50,7 +50,7 @@ class ShoesService {
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = json.decode(utf8.decode(response.bodyBytes));
         var list = jsonResponse['items'] as List<dynamic>;
-        return list.map((model) => ShoesResponse.fromMap(model)).toList();
+        return list.map((model) => ShoesWithSizesResponse.fromMap(model)).toList();
       } else {
         throw Exception('Failed to load shoes: ${response.statusCode}');
       }
