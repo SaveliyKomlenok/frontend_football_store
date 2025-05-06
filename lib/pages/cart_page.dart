@@ -283,10 +283,10 @@ class _CartPageState extends State<CartPage> {
                         // Создаем заказ
                         final orderRequest = OrderRequest(address: address);
                         OrderService().createOrder(orderRequest).then((response) {
-                          Navigator.of(context).pop(); // Закрываем диалог
+                          /*Navigator.of(context).pop(); // Закрываем диалог
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Заказ успешно оформлен')),
-                          );
+                          );*/
                          
                         }).catchError((error) {
                           
