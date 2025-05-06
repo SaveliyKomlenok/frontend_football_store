@@ -23,6 +23,7 @@ class OrderService {
       final response = await http.get(url, headers: headers);
 
       if (response.statusCode == 200) {
+        //print(json.decode(utf8.decode(response.bodyBytes)));
         return OrderListResponse.fromMap(json.decode(utf8.decode(response.bodyBytes)));
       } else {
         throw Exception('Failed to load orders: ${response.statusCode}');

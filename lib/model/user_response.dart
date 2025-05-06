@@ -3,14 +3,14 @@ class UserResponse {
   final String username;
   final String firstname;
   final String lastname;
-  final DateTime createdAt;
+  final DateTime dateOfCreation;
 
   UserResponse({
     required this.id,
     required this.username,
     required this.firstname,
     required this.lastname,
-    required this.createdAt,
+    required this.dateOfCreation,
   });
 
   factory UserResponse.fromMap(Map<String, dynamic> json) {
@@ -19,7 +19,7 @@ class UserResponse {
       username: json['username'] ?? '',
       firstname: json['firstname'] ?? '',
       lastname: json['lastname'] ?? '',
-      createdAt: DateTime.parse(json['createdAt']),
+      dateOfCreation: DateTime.parse(json['dateOfCreation']),
     );
   }
 
@@ -29,7 +29,7 @@ class UserResponse {
       'username': username,
       'firstname': firstname,
       'lastname': lastname,
-      'createdAt': createdAt.toIso8601String(),
+      'dateOfCreation': dateOfCreation.toIso8601String(),
     };
   }
 }
