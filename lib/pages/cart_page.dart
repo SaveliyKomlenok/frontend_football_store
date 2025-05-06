@@ -289,9 +289,7 @@ class _CartPageState extends State<CartPage> {
                           );
                          
                         }).catchError((error) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Ошибка: $error')),
-                          );
+                          
                         });
                         ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Заказ успешно оформлен')),
