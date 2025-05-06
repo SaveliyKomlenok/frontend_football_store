@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:frontend_football_store/model/shoes_response.dart';
 import 'package:frontend_football_store/model/shoes_with_sizes_response.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';

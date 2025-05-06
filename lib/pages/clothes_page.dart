@@ -138,7 +138,7 @@ class _ClothingPageState extends State<ClothesPage> {
         ),
         backgroundColor: const Color(0xFF007BFF),
       ),
-      backgroundColor: const Color(0xFFE0E0E0),
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: Row(
         children: [
           Container(
@@ -200,8 +200,13 @@ class _ClothingPageState extends State<ClothesPage> {
                   return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Ошибка: ${snapshot.error}'));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text('Нет доступной одежды.'));
+                }
+                if (_filteredItems.isEmpty) {
+                  return const Center(
+                      child: Text(
+                    'Одежды не найдено',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                  ));
                 }
 
                 return GridView.builder(
@@ -297,7 +302,7 @@ class ClothingCard extends StatelessWidget {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                       content:
-                                          Text('Ошибка при добавлении: $e')),
+                                          Text('Выбранная одежда размера ${size.size} отсутствует на складе')),
                                 );
                               }
                             },
