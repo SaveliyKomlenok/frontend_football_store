@@ -99,7 +99,29 @@ class _CartPageState extends State<CartPage> {
           ? const Center(child: CircularProgressIndicator())
           : _cartData!.cartClothingList.isEmpty &&
                   _cartData!.cartShoesList.isEmpty
-              ? const Center(child: Text('Корзина пуста'))
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.shopping_cart_outlined,
+                          size: 100, color: Colors.grey[400]),
+                      const SizedBox(height: 20),
+                      const Text(
+                        'Ваша корзина пуста',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black54,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      const Text(
+                        'Добавьте товары, чтобы увидеть их здесь.',
+                        style: TextStyle(fontSize: 16, color: Colors.black38),
+                      ),
+                    ],
+                  ),
+                )
               : Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: Row(
@@ -229,117 +251,122 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
- void _showOrderDialog() {
-  final TextEditingController addressController = TextEditingController();
-  bool isAddressValid = true;
+  void _showOrderDialog() {
+    final TextEditingController addressController = TextEditingController();
+    bool isAddressValid = true;
 
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return StatefulBuilder(
-        builder: (context, setModalState) {
-          return AlertDialog(
-            backgroundColor: Colors.white, // Фон окна белый
-            title: Row(
-              children: [
-                const Padding(
-                  padding: EdgeInsets.only(left: 20.0),
-                  child: Text('Оформление заказа', style: TextStyle(fontWeight: FontWeight.bold)),
-                ),
-                const Spacer(),
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            ),
-            content: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              title: Row(
                 children: [
-                  _buildTextField(
-                    controller: addressController,
-                    label: 'Введите адрес доставки',
-                    isError: !isAddressValid,
-                    onChanged: () {
-                      setModalState(() {
-                        isAddressValid = true; // Сбрасываем ошибку
-                      });
-                    },
+                  const Padding(
+                    padding: EdgeInsets.only(left: 20.0),
+                    child: Text('Оформление заказа',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                   ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
+                  const Spacer(),
+                  IconButton(
+                    icon: const Icon(Icons.close),
                     onPressed: () {
-                      String address = addressController.text;
-
-                      if (address.isEmpty) {
-                        setModalState(() {
-                          isAddressValid = false; // Устанавливаем флаг для отображения ошибки
-                        });
-                      } else {
-                        // Создаем заказ
-                        final orderRequest = OrderRequest(address: address);
-                        OrderService().createOrder(orderRequest).then((response) {
-                          /*Navigator.of(context).pop(); // Закрываем диалог
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Заказ успешно оформлен')),
-                          );*/
-                         
-                        }).catchError((error) {
-                          
-                        });
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Заказ успешно оформлен')),
-                          );
-                         Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => const MainController()),
-                          );
-                      }
+                      Navigator.of(context).pop();
                     },
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: Colors.blue, // Синий фон для кнопки "Подтвердить"
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
-                    ),
-                    child: const Text('Подтвердить', style: TextStyle(fontSize: 16)),
                   ),
                 ],
               ),
-            ),
-          );
-        },
-      );
-    },
-  );
-}
+              content: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildTextField(
+                      controller: addressController,
+                      label: 'Введите адрес доставки',
+                      isError: !isAddressValid,
+                      onChanged: () {
+                        setModalState(() {
+                          isAddressValid = true;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        String address = addressController.text;
+
+                        if (address.isEmpty) {
+                          setModalState(() {
+                            isAddressValid = false;
+                          });
+                        } else {
+                          // Создаем заказ
+                          final orderRequest = OrderRequest(address: address);
+                          OrderService()
+                              .createOrder(orderRequest)
+                              .then((response) {
+                            /*Navigator.of(context).pop(); // Закрываем диалог
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Заказ успешно оформлен')),
+                          );*/
+                          }).catchError((error) {});
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Заказ успешно оформлен')),
+                          );
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const MainController()),
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor:
+                            Colors.blue, // Синий фон для кнопки "Подтвердить"
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 18),
+                      ),
+                      child: const Text('Подтвердить',
+                          style: TextStyle(fontSize: 16)),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
 
 // Метод для создания текстового поля с проверкой на ошибку
-Widget _buildTextField({
-  required TextEditingController controller,
-  required String label,
-  required bool isError,
-  required Function onChanged,
-}) {
-  return TextField(
-    controller: controller,
-    onChanged: (value) => onChanged(),
-    decoration: InputDecoration(
-      labelText: label,
-      errorText: isError ? 'Адрес не может быть пустым' : null,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(20),
-        borderSide: BorderSide(color: isError ? Colors.red : Colors.grey),
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required bool isError,
+    required Function onChanged,
+  }) {
+    return TextField(
+      controller: controller,
+      onChanged: (value) => onChanged(),
+      decoration: InputDecoration(
+        labelText: label,
+        errorText: isError ? 'Адрес не может быть пустым' : null,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: BorderSide(color: isError ? Colors.red : Colors.grey),
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 }
 
 class CartItemCard extends StatelessWidget {

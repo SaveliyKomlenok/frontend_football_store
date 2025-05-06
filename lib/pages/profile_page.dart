@@ -379,7 +379,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 onPressed: _showEditProfileDialog),
                             buildCompactButton(
                                 icon: Icons.lock,
-                                label: 'Изменить Пароль',
+                                label: 'Изменить пароль',
                                 color: Colors.orange,
                                 onPressed: _showChangePasswordDialog),
                             buildCompactButton(
