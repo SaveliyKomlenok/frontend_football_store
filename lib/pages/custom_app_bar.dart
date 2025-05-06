@@ -18,10 +18,20 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   _CustomAppBarState createState() => _CustomAppBarState();
 
   @override
-  Size get preferredSize => const Size.fromHeight(70); // Высота AppBar
+  Size get preferredSize => const Size.fromHeight(70);
 }
 
 class _CustomAppBarState extends State<CustomAppBar> {
+  // Авторизация
+  bool isAuthEmailEmpty = false;
+  bool isAuthPasswordEmpty = false;
+
+  // Регистрация
+  bool isRegEmailEmpty = false;
+  bool isRegPasswordEmpty = false;
+  bool isFirstnameEmpty = false;
+  bool isLastnameEmpty = false;
+
   @override
   Widget build(BuildContext context) {
     return AppBar(
@@ -73,6 +83,10 @@ class _CustomAppBarState extends State<CustomAppBar> {
         padding: EdgeInsets.zero,
       ),
       onPressed: () {
+        setState(() {
+          isAuthEmailEmpty = false;
+          isAuthPasswordEmpty = false;
+        });
         _showAuthDialog(context);
       },
       child: Column(
@@ -90,112 +104,100 @@ class _CustomAppBarState extends State<CustomAppBar> {
   void _showAuthDialog(BuildContext context) {
     final TextEditingController emailController = TextEditingController();
     final TextEditingController passwordController = TextEditingController();
-    bool isEmailEmpty = false;
-    bool isPasswordEmpty = false;
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Colors.white,
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              const Padding(
-                padding: EdgeInsets.only(left: 20.0),
-                child: Text('Авторизация', style: TextStyle(fontWeight: FontWeight.bold)),
-              ),
-              const Spacer(),
-              IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          ),
-          content: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 300,
-                  child: TextField(
-                    controller: emailController,
-                    decoration: InputDecoration(
-                      labelText: 'Имя пользователя',
-                      labelStyle: const TextStyle(color: Colors.black),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide(color: isEmailEmpty ? Colors.red : Colors.blue),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide(color: isEmailEmpty ? Colors.red : Colors.blue),
-                      ),
-                    ),
-                    keyboardType: TextInputType.emailAddress,
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              title: Row(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(left: 20.0),
+                    child: Text('Авторизация', style: TextStyle(fontWeight: FontWeight.bold)),
                   ),
-                ),
-                const SizedBox(height: 16),
-                Container(
-                  width: 300,
-                  child: TextField(
-                    controller: passwordController,
-                    decoration: InputDecoration(
-                      labelText: 'Пароль',
-                      labelStyle: const TextStyle(color: Colors.black),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide(color: isPasswordEmpty ? Colors.red : Colors.blue),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide(color: isPasswordEmpty ? Colors.red : Colors.blue),
-                      ),
-                    ),
-                    obscureText: true,
+                  const Spacer(),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
                   ),
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      isEmailEmpty = emailController.text.isEmpty;
-                      isPasswordEmpty = passwordController.text.isEmpty;
-                    });
+                ],
+              ),
+              content: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildTextField(
+                      controller: emailController,
+                      label: 'Имя пользователя',
+                      isError: isAuthEmailEmpty,
+                      onChanged: () {
+                        setState(() => isAuthEmailEmpty = false);
+                        setModalState(() {});
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    _buildTextField(
+                      controller: passwordController,
+                      label: 'Пароль',
+                      isPassword: true,
+                      isError: isAuthPasswordEmpty,
+                      onChanged: () {
+                        setState(() => isAuthPasswordEmpty = false);
+                        setModalState(() {});
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          isAuthEmailEmpty = emailController.text.isEmpty;
+                          isAuthPasswordEmpty = passwordController.text.isEmpty;
+                        });
+                        setModalState(() {});
 
-                    if (!isEmailEmpty && !isPasswordEmpty) {
-                      final request = UserAuthenticateRequest(
-                        username: emailController.text,
-                        password: passwordController.text,
-                      );
-                      AuthenticationService.authenticate(request, context);
-                     
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Colors.blue,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
+                        if (!isAuthEmailEmpty && !isAuthPasswordEmpty) {
+                          final request = UserAuthenticateRequest(
+                            username: emailController.text,
+                            password: passwordController.text,
+                          );
+                          AuthenticationService.authenticate(request, context);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.blue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+                      ),
+                      child: const Text('Войти', style: TextStyle(fontSize: 16)),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
-                  ),
-                  child: const Text('Войти', style: TextStyle(fontSize: 16)),
+                    const SizedBox(height: 10),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        setState(() {
+                          isRegEmailEmpty = false;
+                          isRegPasswordEmpty = false;
+                          isFirstnameEmpty = false;
+                          isLastnameEmpty = false;
+                        });
+                        _showRegisterDialog(context);
+                      },
+                      child: const Text('Нет аккаунта? Зарегистрируйтесь', style: TextStyle(color: Colors.blue)),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 10),
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    _showRegisterDialog(context);
-                  },
-                  child: const Text('Нет аккаунта? Зарегистрируйтесь', style: TextStyle(color: Colors.blue)),
-                ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
       },
     );
@@ -206,150 +208,144 @@ class _CustomAppBarState extends State<CustomAppBar> {
     final TextEditingController passwordController = TextEditingController();
     final TextEditingController firstnameController = TextEditingController();
     final TextEditingController lastnameController = TextEditingController();
-    bool isFirstnameEmpty = false;
-    bool isLastnameEmpty = false;
-    bool isEmailEmpty = false;
-    bool isPasswordEmpty = false;
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Colors.white,
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              const Padding(
-                padding: EdgeInsets.only(left: 20.0),
-                child: Text('Регистрация', style: TextStyle(fontWeight: FontWeight.bold)),
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              title: Row(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(left: 20.0),
+                    child: Text('Регистрация', style: TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
               ),
-              const Spacer(),
-              IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          ),
-          content: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 300,
-                  child: TextField(
-                    controller: firstnameController,
-                    decoration: InputDecoration(
-                      labelText: 'Имя',
-                      labelStyle: const TextStyle(color: Colors.black),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide(color: isFirstnameEmpty ? Colors.red : Colors.blue),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide(color: isFirstnameEmpty ? Colors.red : Colors.blue),
-                      ),
+              content: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildTextField(
+                      controller: firstnameController,
+                      label: 'Имя',
+                      isError: isFirstnameEmpty,
+                      onChanged: () {
+                        setState(() => isFirstnameEmpty = false);
+                        setModalState(() {});
+                      },
                     ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Container(
-                  width: 300,
-                  child: TextField(
-                    controller: lastnameController,
-                    decoration: InputDecoration(
-                      labelText: 'Фамилия',
-                      labelStyle: const TextStyle(color: Colors.black),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide(color: isLastnameEmpty ? Colors.red : Colors.blue),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide(color: isLastnameEmpty ? Colors.red : Colors.blue),
-                      ),
+                    const SizedBox(height: 16),
+                    _buildTextField(
+                      controller: lastnameController,
+                      label: 'Фамилия',
+                      isError: isLastnameEmpty,
+                      onChanged: () {
+                        setState(() => isLastnameEmpty = false);
+                        setModalState(() {});
+                      },
                     ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Container(
-                  width: 300,
-                  child: TextField(
-                    controller: emailController,
-                    decoration: InputDecoration(
-                      labelText: 'Имя пользователя',
-                      labelStyle: const TextStyle(color: Colors.black),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide(color: isEmailEmpty ? Colors.red : Colors.blue),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide(color: isEmailEmpty ? Colors.red : Colors.blue),
-                      ),
+                    const SizedBox(height: 16),
+                    _buildTextField(
+                      controller: emailController,
+                      label: 'Имя пользователя',
+                      isError: isRegEmailEmpty,
+                      onChanged: () {
+                        setState(() => isRegEmailEmpty = false);
+                        setModalState(() {});
+                      },
                     ),
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Container(
-                  width: 300,
-                  child: TextField(
-                    controller: passwordController,
-                    decoration: InputDecoration(
-                      labelText: 'Пароль',
-                      labelStyle: const TextStyle(color: Colors.black),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide(color: isPasswordEmpty ? Colors.red : Colors.blue),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide(color: isPasswordEmpty ? Colors.red : Colors.blue),
-                      ),
+                    const SizedBox(height: 16),
+                    _buildTextField(
+                      controller: passwordController,
+                      label: 'Пароль',
+                      isPassword: true,
+                      isError: isRegPasswordEmpty,
+                      onChanged: () {
+                        setState(() => isRegPasswordEmpty = false);
+                        setModalState(() {});
+                      },
                     ),
-                    obscureText: true,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      isFirstnameEmpty = firstnameController.text.isEmpty;
-                      isLastnameEmpty = lastnameController.text.isEmpty;
-                      isEmailEmpty = emailController.text.isEmpty;
-                      isPasswordEmpty = passwordController.text.isEmpty;
-                    });
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          isFirstnameEmpty = firstnameController.text.isEmpty;
+                          isLastnameEmpty = lastnameController.text.isEmpty;
+                          isRegEmailEmpty = emailController.text.isEmpty;
+                          isRegPasswordEmpty = passwordController.text.isEmpty;
+                        });
+                        setModalState(() {});
 
-                    if (!isFirstnameEmpty && !isLastnameEmpty && !isEmailEmpty && !isPasswordEmpty) {
-                      final request = UserRegisterRequest(
-                        username: emailController.text,
-                        firstname: firstnameController.text,
-                        lastname: lastnameController.text,
-                        password: passwordController.text,
-                      );
-                      AuthenticationService().register(request, context);
-                      
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Colors.blue,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
+                        if (!isFirstnameEmpty &&
+                            !isLastnameEmpty &&
+                            !isRegEmailEmpty &&
+                            !isRegPasswordEmpty) {
+                          final request = UserRegisterRequest(
+                            username: emailController.text,
+                            firstname: firstnameController.text,
+                            lastname: lastnameController.text,
+                            password: passwordController.text,
+                          );
+                          AuthenticationService().register(request, context);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.blue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+                      ),
+                      child: const Text('Регистрация', style: TextStyle(fontSize: 16)),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
-                  ),
-                  child: const Text('Регистрация', style: TextStyle(fontSize: 16)),
+                  ],
                 ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
       },
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required bool isError,
+    bool isPassword = false,
+    required VoidCallback onChanged,
+  }) {
+    return SizedBox(
+      width: 300,
+      child: TextField(
+        controller: controller,
+        obscureText: isPassword,
+        onChanged: (_) => onChanged(),
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: const TextStyle(color: Colors.black),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: BorderSide(color: isError ? Colors.red : Colors.blue),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: BorderSide(color: isError ? Colors.red : Colors.blue),
+          ),
+        ),
+      ),
     );
   }
 

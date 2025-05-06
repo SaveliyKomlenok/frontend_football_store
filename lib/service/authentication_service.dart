@@ -55,7 +55,7 @@ class AuthenticationService {
         headers: headers,
         body: jsonEncode(request.toMap()),
       );
-       var myToken;
+      var myToken;
       SharedPreferences prefs = await SharedPreferences.getInstance();
       jsonResponse = json.decode(utf8.decode(response.bodyBytes));
       if (jsonResponse['username'] != null) {
@@ -66,10 +66,9 @@ class AuthenticationService {
         
         Navigator.pushReplacement(
           context,
-           MaterialPageRoute(builder: (c) => const MainController()),
+           MaterialPageRoute(builder: (context) => const MainController()),
         );
         //Navigator.of(context).pop();
-         
       } else {
         // Обработка ошибок
         ScaffoldMessenger.of(context).showSnackBar(

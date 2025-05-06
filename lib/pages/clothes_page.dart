@@ -98,6 +98,7 @@ class _ClothingPageState extends State<ClothesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Row(
           children: [
             const Icon(Icons.search, color: Colors.white),
@@ -143,7 +144,7 @@ class _ClothingPageState extends State<ClothesPage> {
           Container(
             width: 250,
             padding: const EdgeInsets.all(8),
-            color: Colors.blue[50],
+            color: Colors.white, // Установлен белый цвет фона
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -154,6 +155,7 @@ class _ClothingPageState extends State<ClothesPage> {
                     return CheckboxListTile(
                       title: Text(manufacturer),
                       value: _selectedManufacturers.contains(manufacturer),
+                      activeColor: Colors.blue, // Синий цвет чекбокса
                       onChanged: (checked) {
                         setState(() {
                           if (checked == true) {
@@ -173,6 +175,7 @@ class _ClothingPageState extends State<ClothesPage> {
                     return CheckboxListTile(
                       title: Text(size),
                       value: _selectedSizes.contains(size),
+                      activeColor: Colors.blue, // Синий цвет чекбокса
                       onChanged: (checked) {
                         setState(() {
                           if (checked == true) {
