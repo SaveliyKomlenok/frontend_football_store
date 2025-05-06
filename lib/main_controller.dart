@@ -4,6 +4,7 @@ import 'package:frontend_football_store/pages/clothes_page.dart';
 import 'package:frontend_football_store/pages/clothing_info_page.dart';
 import 'package:frontend_football_store/pages/custom_app_bar.dart';
 import 'package:frontend_football_store/pages/main_page.dart';
+import 'package:frontend_football_store/pages/orders_page.dart';
 import 'package:frontend_football_store/pages/profile_page.dart';
 import 'package:frontend_football_store/pages/shoes_info_page.dart';
 import 'package:frontend_football_store/pages/shoes_page.dart';
@@ -34,9 +35,10 @@ class _MainControllerState extends State<MainController> {
       ClothesPage(onMenuTap: _selectPage),
       ShoesPage(onMenuTap: _selectPage),
       CartPage(),
-      const ProfilePage(),
+      ProfilePage(onMenuTap: _selectPage),
       const ClothingInfoPage(),
-      const ShoesInfoPage()
+      const ShoesInfoPage(),
+      OrdersPage()
     ]);
   }
 
