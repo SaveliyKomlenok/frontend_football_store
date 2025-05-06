@@ -57,7 +57,29 @@ class _OrdersPageState extends State<OrdersPage> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Ошибка: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.items.isEmpty) {
-            return const Center(child: Text('Нет заказов'));
+            return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.add_shopping_cart_rounded,
+                          size: 100, color: Colors.grey[400]),
+                      const SizedBox(height: 20),
+                      const Text(
+                        'Заказы отсутствуют',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black54,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      const Text(
+                        'Оформите заказ, чтобы увидеть его здесь.',
+                        style: TextStyle(fontSize: 16, color: Colors.black38),
+                      ),
+                    ],
+                  ),
+                );
           }
 
           final orders = snapshot.data!.items;
@@ -69,6 +91,12 @@ class _OrdersPageState extends State<OrdersPage> {
                 order: orders[index],
                 loadClothingImage: _loadClothingImage,
                 loadShoesImage: _loadShoesImage,
+                onDelete: (id) async {
+                  await OrderService().deleteOrder(id);
+                  setState(() {
+                    ordersFuture = OrderService().findAllOrders(); // Обновляем список заказов
+                  });
+                },
               );
             },
           );
@@ -82,11 +110,13 @@ class OrderCard extends StatelessWidget {
   final OrderResponse order;
   final Future<Uint8List?> Function(int) loadClothingImage;
   final Future<Uint8List?> Function(int) loadShoesImage;
+  final Function(int) onDelete; // Добавляем функцию для удаления заказа
 
   const OrderCard({
     required this.order,
     required this.loadClothingImage,
     required this.loadShoesImage,
+    required this.onDelete, // Передаём функцию в конструктор
     super.key,
   });
 
@@ -109,6 +139,59 @@ class OrderCard extends StatelessWidget {
                   style: const TextStyle(
                       color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
                 ),
+                ElevatedButton(
+                  onPressed: () async {
+                    final result = await showDialog<bool>(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        backgroundColor: Colors.white,
+                        title: Row(
+                          children: [
+                            const Text('Подтверждение удаления',
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            const Spacer(),
+                            IconButton(
+                              icon: const Icon(Icons.close),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        ),
+                        content: const Text('Вы уверены, что хотите удалить этот заказ?'),
+                        actions: [
+                          Center(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.of(context).pop(true);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: Colors.white, backgroundColor: Colors.red,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                padding: const EdgeInsets.symmetric(horizontal: 24),
+                              ),
+                              child: const Text('Удалить'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+
+                    if (result == true) {
+                      await onDelete(order.id);
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.red, backgroundColor: Colors.white,
+                    side: const BorderSide(color: Colors.red),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                  child: const Text('Отменить заказ'),
+                ),
               ],
             ),
             const SizedBox(height: 8),
@@ -116,15 +199,12 @@ class OrderCard extends StatelessWidget {
               '${order.totalPrice} BYN',
               style: const TextStyle(color: Colors.green, fontSize: 18),
             ),
-            
             const SizedBox(height: 8),
             Text(
               'Адрес: ${order.address}',
               style: const TextStyle(color: Colors.black, fontSize: 18),
             ),
-            
             const SizedBox(height: 8),
-            
             _buildItemsGrid(order),
           ],
         ),
@@ -168,7 +248,7 @@ class OrderCard extends StatelessWidget {
             width: 400,
             height: 400,
             child: Padding(
-              padding: const EdgeInsets.all(12.0), // Padding for text
+              padding: const EdgeInsets.all(12.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -178,7 +258,7 @@ class OrderCard extends StatelessWidget {
                       height: 400,
                       alignment: Alignment.center,
                       child: const SizedBox(
-                        width: 40, // Small loader size
+                        width: 40,
                         height: 40,
                         child: CircularProgressIndicator(),
                       ),
@@ -198,9 +278,9 @@ class OrderCard extends StatelessWidget {
                     children: [
                       Text(
                         '${clothing.clothingWarehouse.clothing.price} BYN',
-                        style: const TextStyle(fontSize: 18, color: Colors.green,fontWeight: FontWeight.bold),
+                        style: const TextStyle(fontSize: 18, color: Colors.green, fontWeight: FontWeight.bold),
                       ),
-                       const SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text(
                         '${clothing.clothingWarehouse.clothing.name}',
                         style: const TextStyle(fontWeight: FontWeight.bold),
@@ -241,7 +321,7 @@ class OrderCard extends StatelessWidget {
             width: 400,
             height: 400,
             child: Padding(
-              padding: const EdgeInsets.all(12.0), // Padding for text
+              padding: const EdgeInsets.all(12.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -269,9 +349,9 @@ class OrderCard extends StatelessWidget {
                     children: [
                       Text(
                         'Цена: ${shoes.shoesWarehouse.shoes.price} BYN',
-                        style: const TextStyle(fontSize: 18, color: Colors.green,fontWeight: FontWeight.bold),
+                        style: const TextStyle(fontSize: 18, color: Colors.green, fontWeight: FontWeight.bold),
                       ),
-                       const SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text(
                         '${shoes.shoesWarehouse.shoes.name}',
                         style: const TextStyle(fontWeight: FontWeight.bold),
